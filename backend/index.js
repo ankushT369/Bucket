@@ -11,8 +11,8 @@ const app = express();
 const PORT = 8080;
 
 // Google API configuration
-const CLIENT_ID = '201515577238-nfuiu0uq944op9h64folmhfeee7hvver.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
+const CLIENT_ID = '';
+const CLIENT_SECRET = '';
 const REDIRECT_URI = 'http://localhost:8080/callback';
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 let tokens;

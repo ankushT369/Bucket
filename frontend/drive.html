@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Drive File Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .file-item {
+      margin: 5px 0;
+    }
+    .folder {
+      color: blue;
+    }
+    .file {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <h1>Google Drive File Manager</h1>
+  <button onclick="authenticate()">Authenticate</button>
+  <button onclick="createFolder()">Create Folder</button>
+  <button onclick="createFile()">Create File</button>
+  <button onclick="listDriveFiles()">List Google Drive Files</button>
+
+  <h2>Files and Folders:</h2>
+  <div id="file-list">
+    <!-- The files and folders will be displayed here -->
+  </div>
+
+  <script>
+    async function authenticate() {
+      window.location.href = '/auth';
+    }
+
+    async function createFolder() {
+      const folderName = prompt('Enter folder name:');
+      if (!folderName) {
+        alert('folder name is required.');
+        return;
+      }
+      const response = await fetch('/create-folder', {
+        method: 'post',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name: folderName }),
+      });
+
+      const data = await response.json();
+      alert(`folder created with id: ${data.id}`);
+    }
+
+    async function createFile() {
+        const fileName = prompt('Enter file name:');
+        if (!fileName) {
+            alert('file name is required.');
+            return;
+        }
+        const response = await fetch('/create-file', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ name: fileName }),
+        });
+
+        const data = await response.json();
+        alert(`folder created with id: ${data.id}`);
+    }
+
+    async function listDriveFiles() {
+      try {
+        const response = await fetch('/drive-list');
+        if (!response.ok) {
+          throw new Error('Failed to fetch files from Google Drive.');
+        }
+
+        const data = await response.json();
+        const fileListDiv = document.getElementById('file-list');
+
+        // Clear any existing content
+        fileListDiv.innerHTML = '';
+
+        // Display files and folders
+        if (data.files && data.files.length > 0) {
+          data.files.forEach((file) => {
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item ' + (file.type === 'Folder' ? 'folder' : 'file');
+            fileItem.textContent = `${file.type}: ${file.name} (ID: ${file.id})`;
+            fileListDiv.appendChild(fileItem);
+          });
+        } else {
+          fileListDiv.textContent = 'No files or folders found in your Google Drive.';
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error);
+        alert('Error fetching files. Please check the console for more details.');
+      }
+    }
+  </script>
+</body>
+</html>
